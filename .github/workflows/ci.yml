@@ -1,0 +1,39 @@
+name: CI
+
+env:
+  DB_HOST: mysql_payments
+  DB_PORT: 3306
+  DB_NAME: labo05_payments_db
+  DB_USER: labo05
+  DB_PASS: labo05
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+      - name: Nettoyer le workspace
+        run: |
+          sudo rm -rf ${{ github.workspace }}/* || true
+          sudo rm -rf ${{ github.workspace }}/.* || true
+        continue-on-error: true
+
+      - name: Checkout dépot
+        uses: actions/checkout@v4
+
+      - name: Déploiement Docker
+        run: docker compose --profile full up -d --build --remove-orphans --wait
+
+
+    
+
+
+  
+
